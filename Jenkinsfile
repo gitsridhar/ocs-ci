@@ -35,7 +35,8 @@ pipeline {
         sh """
           if [ ! -z '${env.EMAIL}' ]; then
             sudo yum install -y /usr/sbin/postfix
-            sudo systemctl start postfix
+            sudo systemctl start postfix || :
+            sudo journalctl -xe || :
           fi
           sudo sysctl -w net.ipv6.conf.all.disable_ipv6=1
           sudo sysctl -w net.ipv6.conf.default.disable_ipv6=1
