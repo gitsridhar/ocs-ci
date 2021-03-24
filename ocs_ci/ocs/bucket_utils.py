@@ -1381,3 +1381,45 @@ class BucketPolicyOps:
                 raise UnexpectedBehaviour(
                     f"{e.response} received invalid error code {response.error['Code']}"
                 )
+
+
+class ObcIOs:
+    def __init__(self, mcg_obj, bucket_name):
+        self.bucket_name = bucket_name
+        self.mcg_obj = mcg_obj
+        logger.info(f"bucket name is {self.bucket_name}")
+
+    def obc_ios(self):
+        """
+        Creates bucket then writes, reads and deletes objects
+        """
+        obj_data = "A string data"
+        from uuid import uuid4
+
+        logger.info(f"working on bucket name {self.bucket_name}")
+        for _ in range(0, 50):
+            key = "Object-key-" + f"{uuid4().hex}"
+            logger.info(
+                f"Write, read and delete object with key: {key} {self.bucket_name}"
+            )
+            for _ in range(20):
+                try:
+                    assert s3_put_object(
+                        self.mcg_obj, self.bucket_name, key, obj_data
+                    ), f"Failed: Put object, {key}"
+                except Exception as e:
+                    logger.info(e)
+            for _ in range(20):
+                try:
+                    assert s3_get_object(
+                        self.mcg_obj, self.bucket_name, key
+                    ), f"Failed: Get object, {key}"
+                except Exception as e:
+                    logger.info(e)
+            for _ in range(20):
+                try:
+                    assert s3_delete_object(
+                        self.mcg_obj, self.bucket_name, key
+                    ), f"Failed: Delete object, {key}"
+                except Exception as e:
+                    logger.info(e)
